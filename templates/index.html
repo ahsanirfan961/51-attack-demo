@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>51% Attack Simulation - Blockchain Security Demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>51% Attack Simulation</h1>
+            <p class="subtitle">Preventing 51% Attack By Using Consecutive Block Limit (CBL)</p>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            <!-- Left Panel: Attacker Controls -->
+            <div class="panel attacker-panel">
+                <h2>🎯 Attacker Control Panel (Eve)</h2>
+                <div class="button-group">
+                    <button id="btn-crack-rsa" class="btn btn-danger">1. Crack RSA Key</button>
+                    <button id="btn-acquire-hash" class="btn btn-warning">2. Acquire 51% Hash Power</button>
+                    <button id="btn-mine-block" class="btn btn-warning">3. Mine Attack Block</button>
+                    <button id="btn-broadcast" class="btn btn-danger">4. Broadcast Chain</button>
+                </div>
+                <div class="status-box">
+                    <h3>Attack Status</h3>
+                    <div class="status-item">
+                        <span>Alice:</span>
+                        <span id="alice-status" class="status-badge">Secure</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Hash Power:</span>
+                        <span id="hash-power" class="status-badge">0%</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Attack Blocks:</span>
+                        <span id="attack-blocks" class="status-badge">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center: Blockchain Visualization -->
+            <div class="panel blockchain-panel">
+                <h2>⛓️ Blockchain Visualization</h2>
+                <div id="blockchain-visualization"></div>
+                <div class="legend">
+                    <span class="legend-item"><span class="legend-color honest"></span> Honest Chain (Mainnet)</span>
+                    <span class="legend-item"><span class="legend-color attack"></span> Attack Chain (Fork)</span>
+                    <span class="legend-item"><span class="legend-color genesis"></span> Genesis Block</span>
+                </div>
+            </div>
+
+            <!-- Right Panel: Defense Controls -->
+            <div class="panel defense-panel">
+                <h2>🛡️ Network Defense</h2>
+                <div class="button-group">
+                    <button id="btn-enable-cbl" class="btn btn-success">Enable CBL (Basic)</button>
+                    <button id="btn-enable-stake" class="btn btn-primary">Enable ECC + Stake-CBL</button>
+                    <button id="btn-reset" class="btn btn-secondary">Reset</button>
+                </div>
+                <div class="defense-status">
+                    <h3>Protocol Mode</h3>
+                    <div class="defense-item">
+                        <span>Current Mode:</span>
+                        <span id="defense-mode" class="defense-badge inactive">LEGACY</span>
+                    </div>
+                    <div class="defense-item">
+                        <span>Cryptography:</span>
+                        <span id="crypto-status" class="defense-badge inactive">RSA (Weak)</span>
+                    </div>
+                    <div class="defense-item">
+                        <span>CBL Basic:</span>
+                        <span id="cbl-status" class="defense-badge inactive">INACTIVE</span>
+                    </div>
+                    <div class="defense-item">
+                        <span>Stake-CBL:</span>
+                        <span id="stake-status" class="defense-badge inactive">INACTIVE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Execution Flow Panel -->
+            <div class="panel code-flow-panel">
+                <h2>🔍 Code Execution Flow</h2>
+                <div class="execution-controls">
+                    <button id="btn-expand-details" class="btn-small">Toggle Details</button>
+                    <button id="btn-clear-flow" class="btn-small">Clear Flow</button>
+                </div>
+                <div id="code-flow-visualization"></div>
+                <div id="function-stack" class="function-stack"></div>
+            </div>
+        </div>
+
+        <!-- Bottom: Wallet Balances and Logs -->
+        <div class="bottom-grid">
+            <div class="panel wallet-panel">
+                <h2>💰 Wallet Balances</h2>
+                <div id="wallet-balances"></div>
+            </div>
+            <div class="panel log-panel">
+                <h2>📋 Network Console</h2>
+                <div id="logs" class="logs"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
