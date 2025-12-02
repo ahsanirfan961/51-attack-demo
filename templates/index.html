@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 </head>
+
 <body>
     <div class="container">
         <!-- Header -->
@@ -58,6 +60,7 @@
             <div class="panel defense-panel">
                 <h2>🛡️ Network Defense</h2>
                 <div class="button-group">
+                    <button id="btn-mine-honest" class="btn btn-info">Mine Honest Block</button>
                     <button id="btn-enable-cbl" class="btn btn-success">Enable CBL (Basic)</button>
                     <button id="btn-enable-stake" class="btn btn-primary">Enable ECC + Stake-CBL</button>
                     <button id="btn-reset" class="btn btn-secondary">Reset</button>
@@ -110,4 +113,5 @@
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
+
 </html>

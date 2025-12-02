@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initializeVisualization() {
     const container = document.getElementById('blockchain-visualization');
-    
+
     const options = {
         nodes: {
             shape: 'box',
@@ -63,7 +63,7 @@ function initializeVisualization() {
             dragView: true
         }
     };
-    
+
     nodes = new vis.DataSet([]);
     edges = new vis.DataSet([]);
     network = new vis.Network(container, { nodes, edges }, options);
@@ -72,7 +72,7 @@ function initializeVisualization() {
 function initializeCodeFlowVisualization() {
     const container = document.getElementById('code-flow-visualization');
     if (!container) return;
-    
+
     const options = {
         nodes: {
             shape: 'box',
@@ -133,7 +133,7 @@ function initializeCodeFlowVisualization() {
             dragView: true
         }
     };
-    
+
     // Use simple HTML/CSS instead of vis.js for code execution flow
     container.innerHTML = '<div id="code-execution-chain" class="code-execution-chain"></div>';
 }
@@ -142,6 +142,7 @@ function setupEventListeners() {
     document.getElementById('btn-crack-rsa').addEventListener('click', crackRSA);
     document.getElementById('btn-acquire-hash').addEventListener('click', acquireHashPower);
     document.getElementById('btn-mine-block').addEventListener('click', mineAttackBlock);
+    document.getElementById('btn-mine-honest').addEventListener('click', mineHonestBlock);
     document.getElementById('btn-broadcast').addEventListener('click', broadcastChain);
     document.getElementById('btn-enable-cbl').addEventListener('click', enableCBL);
     document.getElementById('btn-enable-stake').addEventListener('click', enableStakeCBL);
@@ -159,7 +160,7 @@ async function updateState() {
     try {
         const response = await fetch(`${API_BASE}/api/state`);
         const state = await response.json();
-        
+
         updateBlockchainVisualization(state);
         updateWalletBalances(state.wallets);
         updateLogs(state.logs);
@@ -177,19 +178,19 @@ function updateBlockchainVisualization(state) {
     const edgeList = [];
     const honestChain = state.honest_chain;
     const attackChain = state.attack_chain;
-    
+
     const HONEST_Y = 1.0;
     const ATTACK_Y = 0.0;
-    
+
     // Add honest chain nodes (top)
     honestChain.forEach((block, idx) => {
         const nodeId = `H${block.index}`;
         const isGenesis = block.index === 0;
-        
-        const txInfo = block.transactions.length > 0 
+
+        const txInfo = block.transactions.length > 0
             ? `${block.transactions[0].from_addr}->${block.transactions[0].to_addr} ${block.transactions[0].amount} BTC`
             : 'Genesis';
-        
+
         nodeMap.set(nodeId, {
             id: nodeId,
             label: `#${block.index}\n${block.miner.substring(0, 10)}\n${txInfo}`,
@@ -206,10 +207,10 @@ function updateBlockchainVisualization(state) {
             fixed: { x: true, y: true },
             level: idx
         });
-        
+
         if (idx > 0) {
             edgeList.push({
-                from: `H${honestChain[idx-1].index}`,
+                from: `H${honestChain[idx - 1].index}`,
                 to: nodeId,
                 color: '#1976d2',
                 width: 4,
@@ -217,17 +218,17 @@ function updateBlockchainVisualization(state) {
             });
         }
     });
-    
+
     // Add attack chain nodes (bottom)
     if (attackChain && attackChain.length > 0) {
         attackChain.forEach((block, idx) => {
             if (block.index === 0) return; // Skip genesis
-            
+
             const nodeId = `A${block.index}_${idx}`;
-            const txInfo = block.transactions.length > 0 
+            const txInfo = block.transactions.length > 0
                 ? `${block.transactions[0].from_addr}->${block.transactions[0].to_addr} ${block.transactions[0].amount} BTC`
                 : 'Empty';
-            
+
             nodeMap.set(nodeId, {
                 id: nodeId,
                 label: `#${block.index}\n${block.miner.substring(0, 10)}\n${txInfo}\n[ATTACK]`,
@@ -244,8 +245,8 @@ function updateBlockchainVisualization(state) {
                 fixed: { x: true, y: true },
                 level: idx
             });
-            
-            const prevId = idx > 1 ? `A${attackChain[idx-1].index}_${idx-1}` : 'H0';
+
+            const prevId = idx > 1 ? `A${attackChain[idx - 1].index}_${idx - 1}` : 'H0';
             edgeList.push({
                 from: prevId,
                 to: nodeId,
@@ -256,15 +257,15 @@ function updateBlockchainVisualization(state) {
             });
         });
     }
-    
+
     // Update network
     nodes.clear();
     edges.clear();
-    
+
     if (nodeMap.size > 0) {
         nodes.add(Array.from(nodeMap.values()));
         edges.add(edgeList);
-        
+
         setTimeout(() => {
             network.fit({
                 animation: {
@@ -279,13 +280,13 @@ function updateBlockchainVisualization(state) {
 function updateWalletBalances(wallets) {
     const container = document.getElementById('wallet-balances');
     container.innerHTML = '';
-    
+
     Object.values(wallets).forEach(wallet => {
         const div = document.createElement('div');
         div.className = `wallet-item ${wallet.name.toLowerCase()}`;
-        
+
         const balanceColor = wallet.balance === 0 ? 'red' : (wallet.balance < wallet.original_balance ? 'orange' : 'green');
-        
+
         div.innerHTML = `
             <div>
                 <div class="wallet-name">${wallet.name}</div>
@@ -302,11 +303,11 @@ function updateWalletBalances(wallets) {
 function updateLogs(logs) {
     const container = document.getElementById('logs');
     container.innerHTML = '';
-    
+
     logs.forEach(log => {
         const div = document.createElement('div');
         div.className = 'log-entry';
-        
+
         if (log.includes('SUCCESS') || log.includes('✓')) {
             div.className += ' success';
         } else if (log.includes('FAILED') || log.includes('BLOCKED') || log.includes('✗') || log.includes('REJECTED')) {
@@ -316,22 +317,22 @@ function updateLogs(logs) {
         } else if (log.includes('EVE')) {
             div.className += ' warning';
         }
-        
+
         div.textContent = log;
         container.appendChild(div);
     });
-    
+
     container.scrollTop = container.scrollHeight;
 }
 
 function updateStatus(state) {
     document.getElementById('alice-status').textContent = state.alice_cracked ? 'Cracked' : 'Secure';
     document.getElementById('alice-status').className = state.alice_cracked ? 'status-badge cracked' : 'status-badge';
-    
+
     const evePower = state.hash_power?.Eve || 0;
     document.getElementById('hash-power').textContent = `${evePower}%`;
     document.getElementById('hash-power').className = evePower >= 51 ? 'status-badge cracked' : 'status-badge';
-    
+
     const attackBlocks = state.attack_chain?.length || 0;
     document.getElementById('attack-blocks').textContent = Math.max(0, attackBlocks - 1); // Exclude genesis
 }
@@ -339,17 +340,17 @@ function updateStatus(state) {
 function updateDefenseStatus(state) {
     const mode = state.defense_mode || 'LEGACY';
     document.getElementById('defense-mode').textContent = mode;
-    document.getElementById('defense-mode').className = mode === 'LEGACY' ? 'defense-badge inactive' : 
-                                                       mode === 'CBL' ? 'defense-badge active' : 
-                                                       'defense-badge active';
-    
+    document.getElementById('defense-mode').className = mode === 'LEGACY' ? 'defense-badge inactive' :
+        mode === 'CBL' ? 'defense-badge active' :
+            'defense-badge active';
+
     const isECC = state.wallets?.Alice?.is_ecc || false;
     document.getElementById('crypto-status').textContent = isECC ? 'ECC (Secure)' : 'RSA (Weak)';
     document.getElementById('crypto-status').className = isECC ? 'defense-badge active' : 'defense-badge inactive';
-    
+
     document.getElementById('cbl-status').textContent = mode === 'CBL' || mode === 'STAKE_CBL' ? 'ACTIVE' : 'INACTIVE';
     document.getElementById('cbl-status').className = mode === 'CBL' || mode === 'STAKE_CBL' ? 'defense-badge active' : 'defense-badge inactive';
-    
+
     document.getElementById('stake-status').textContent = mode === 'STAKE_CBL' ? 'ACTIVE' : 'INACTIVE';
     document.getElementById('stake-status').className = mode === 'STAKE_CBL' ? 'defense-badge active' : 'defense-badge inactive';
 }
@@ -397,6 +398,21 @@ async function mineAttackBlock() {
     } catch (error) {
         console.error('Error:', error);
         alert('Error mining block');
+    }
+}
+
+async function mineHonestBlock() {
+    try {
+        const response = await fetch(`${API_BASE}/api/mine_honest_block`, {
+            method: 'POST'
+        });
+        const result = await response.json();
+        if (!result.success) {
+            alert(result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error mining honest block');
     }
 }
 
@@ -467,58 +483,58 @@ function clearFlow() {
 function updateCodeFlowVisualization(state) {
     const container = document.getElementById('code-execution-chain');
     if (!container || !state.execution_tracker) return;
-    
+
     const steps = state.execution_tracker.steps || [];
     if (steps.length === 0) {
         container.innerHTML = '<div class="code-exec-empty">No code execution yet. Click a button to see execution flow.</div>';
         return;
     }
-    
+
     // Build code execution chain
     let html = '<div class="code-chain">';
-    
+
     steps.forEach((step, idx) => {
         const status = step.status || 'checking';
         const statusClass = status === 'passed' ? 'passed' : (status === 'failed' ? 'failed' : 'checking');
         const functionName = step.function || 'unknown';
-        
+
         html += `<div class="code-block ${statusClass}" data-index="${idx}">`;
         html += `<div class="code-block-header">`;
         html += `<span class="code-block-number">#${idx + 1}</span>`;
         html += `<span class="code-block-function">${functionName}()</span>`;
         html += `<span class="code-block-step">${step.step}</span>`;
         html += `</div>`;
-        
+
         // Code snippet
         if (step.code_snippet) {
             html += `<div class="code-snippet">`;
             html += `<pre><code>${escapeHtml(step.code_snippet)}</code></pre>`;
             html += `</div>`;
         }
-        
+
         // Security context
         if (step.security_context) {
             html += `<div class="code-context">`;
             html += `<span class="context-label">[${step.security_context}]</span>`;
             html += `</div>`;
         }
-        
+
         // Details if no code snippet
         if (step.details && !step.code_snippet) {
             html += `<div class="code-details">${escapeHtml(step.details)}</div>`;
         }
-        
+
         html += `</div>`;
-        
+
         // Arrow connector (except for last step)
         if (idx < steps.length - 1) {
             html += `<div class="code-arrow">→</div>`;
         }
     });
-    
+
     html += '</div>';
     container.innerHTML = html;
-    
+
     // Auto-scroll to bottom
     container.scrollTop = container.scrollHeight;
 }
@@ -532,38 +548,38 @@ function escapeHtml(text) {
 function updateFunctionStack(state) {
     const container = document.getElementById('function-stack');
     if (!container || !state.execution_tracker) return;
-    
+
     const callStack = state.execution_tracker.call_stack || [];
     const steps = state.execution_tracker.steps || [];
     const currentFunction = state.execution_tracker.current_function;
-    
+
     container.innerHTML = '';
-    
+
     if (callStack.length === 0 && steps.length === 0) {
         container.innerHTML = '<div style="color: #757575; font-style: italic;">No active execution</div>';
         return;
     }
-    
+
     // Show call stack
     const stackHeader = document.createElement('div');
     stackHeader.style.fontWeight = 'bold';
     stackHeader.style.marginBottom = '10px';
     stackHeader.textContent = 'Function Call Stack:';
     container.appendChild(stackHeader);
-    
+
     callStack.forEach((func, idx) => {
         const div = document.createElement('div');
         div.className = 'function-stack-item';
         div.style.marginLeft = `${idx * 20}px`;
-        
+
         if (func === currentFunction) {
             div.className += ' checking';
         }
-        
+
         div.textContent = `${idx + 1}. ${func}()`;
         container.appendChild(div);
     });
-    
+
     // Show current step if available
     if (steps.length > 0) {
         const lastStep = steps[steps.length - 1];

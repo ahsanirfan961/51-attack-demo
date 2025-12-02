@@ -18,7 +18,7 @@
     --text-dark: #212121;
     --text-light: #ffffff;
     --border-radius: 8px;
-    --shadow: 0 2px 8px rgba(0,0,0,0.1);
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 body {
@@ -121,7 +121,7 @@ body {
 
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn:active {
@@ -148,36 +148,46 @@ body {
     color: var(--text-light);
 }
 
+.btn-info {
+    background: #0097a7;
+    color: var(--text-light);
+}
+
 .btn-secondary {
     background: var(--color-secondary);
     color: var(--text-light);
 }
 
-.status-box, .defense-status {
+.status-box,
+.defense-status {
     margin-top: 20px;
     padding: 15px;
     background: var(--bg-light);
     border-radius: var(--border-radius);
 }
 
-.status-box h3, .defense-status h3 {
+.status-box h3,
+.defense-status h3 {
     font-size: 1em;
     margin-bottom: 10px;
     color: var(--text-dark);
 }
 
-.status-item, .defense-item {
+.status-item,
+.defense-item {
     display: flex;
     justify-content: space-between;
     padding: 8px 0;
     border-bottom: 1px solid #e0e0e0;
 }
 
-.status-item:last-child, .defense-item:last-child {
+.status-item:last-child,
+.defense-item:last-child {
     border-bottom: none;
 }
 
-.status-badge, .defense-badge {
+.status-badge,
+.defense-badge {
     padding: 4px 12px;
     border-radius: 12px;
     font-size: 0.85em;
@@ -579,14 +589,16 @@ body {
     display: inline-block;
     width: 20px;
     height: 20px;
-    border: 3px solid rgba(255,255,255,.3);
+    border: 3px solid rgba(255, 255, 255, .3);
     border-radius: 50%;
     border-top-color: #fff;
     animation: spin 1s ease-in-out infinite;
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Responsive */
@@ -600,9 +612,8 @@ body {
     .main-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .bottom-grid {
         grid-template-columns: 1fr;
     }
 }
-
